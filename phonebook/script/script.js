@@ -62,9 +62,11 @@ const data = [
   const createFooter = () => {
     const footer = document.createElement('footer');
     footer.classList.add('footer');
+
     const footerContainer = createContainer();
     footer.append(footerContainer);
     footer.footerContainer = footerContainer;
+
     return footer;
   };
 
@@ -79,6 +81,7 @@ const data = [
   const createButtonsGroup = params => {
     const btnWrapper = document.createElement('div');
     btnWrapper.classList.add('btn-wrapper');
+
     const btns = params.map(({className, type, text}) => {
       const button = document.createElement('button');
       button.type = type;
@@ -86,7 +89,9 @@ const data = [
       button.className = className;
       return button;
     });
+
     btnWrapper.append(...btns);
+
     return {
       btnWrapper,
       btns,
@@ -104,11 +109,11 @@ const data = [
         <th>Имя</th>
         <th>Фамилия</th>
         <th>Телефон</th>
+        <th></th>
       </tr>
     `);
 
     const tbody = document.createElement('tbody');
-
     table.append(thead, tbody);
     table.tbody = tbody;
 
@@ -182,16 +187,20 @@ const data = [
     const table = createTable();
     const form = createForm();
     const footer = createFooter();
-    const footerlogo = footerText(title);
+    const footerLogo = footerText(title);
 
     header.headerContainer.append(logo);
     main.mainContainer.append(buttonGroup.btnWrapper, table, form.overlay);
     app.append(header, main);
     main.after(footer);
-    footer.footerContainer.append(footerlogo);
+    footer.footerContainer.append(footerLogo);
 
     return {
       list: table.tbody,
+      logo,
+      btnAdd: buttonGroup.btns[0],
+      formOverlay: form.overlay,
+      form: form.form,
     };
   };
 
@@ -212,9 +221,18 @@ const data = [
     const phoneLink = document.createElement('a');
     phoneLink.href = `tel: ${phone}`;
     phoneLink.textContent = phone;
+    tr.phoneLink = phoneLink;
     tdPhone.append(phoneLink);
+    const edit = document.createElement('td');
+    const editBtn = document.createElement('button');
+    editBtn.style.background = 'url("./phonebook/img/edit.svg")';
+    editBtn.style.backgroundRepeat = 'no-repeat';
+    editBtn.style.height = '22px';
+    editBtn.style.width = '22px';
+    editBtn.style.border = 'none';
+    edit.append(editBtn);
 
-    tr.append(tdDel, tdName, tdSurname, tdPhone);
+    tr.append(tdDel, tdName, tdSurname, tdPhone, edit);
 
     return tr;
   };
@@ -222,14 +240,40 @@ const data = [
   const renderContacts = (elem, data) => {
     const allRow = data.map(createRow);
     elem.append(...allRow);
+    return allRow;
+  };
+
+  const hoverRow = (allRow, logo) => {
+    const text = logo.textContent;
+    allRow.forEach(contact => {
+      contact.addEventListener('mouseenter', () => {
+        logo.textContent = contact.phoneLink.textContent;
+      });
+      contact.addEventListener('mouseleave', () => {
+        logo.textContent = text;
+      });
+    });
   };
 
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
-    const {list} = phoneBook;
-    renderContacts(list, data);
+    const {list, logo, btnAdd, formOverlay, form} = phoneBook;
     // Функционал
+    const allRow = renderContacts(list, data);
+    hoverRow(allRow, logo);
+
+    btnAdd.addEventListener('click', () => {
+      formOverlay.classList.add('is-visible');
+    });
+
+    form.addEventListener('click', event => {
+      event.stopPropagation();
+    });
+
+    formOverlay.addEventListener('click', () => {
+      formOverlay.classList.remove('is-visible');
+    });
   };
 
   window.phoneBookInit = init;

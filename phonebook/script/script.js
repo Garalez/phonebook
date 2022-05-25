@@ -311,29 +311,3 @@ const data = [
 
   window.phoneBookInit = init;
 }
-
-// contactName.addEventListener('click', () => {
-//   const sortedRows = Array.from(contactRows).slice(0);
-//   sortedRows.sort((rowA, rowB) => {
-//     if (rowA.cells[1].textContent > rowB.cells[1].textContent) {
-//       return 1;
-//     }
-//     if (rowA.cells[1].textContent < rowB.cells[1].textContent) {
-//       return -1;
-//     }
-//   });
-//   list.append(...sortedRows);
-// });
-
-// contactSurname.addEventListener('click', () => {
-//   const sortedRows = Array.from(contactRows).slice(0);
-//   sortedRows.sort((rowA, rowB) => {
-//     if (rowA.cells[2].textContent > rowB.cells[2].textContent) {
-//       return 1;
-//     }
-//     if (rowA.cells[2].textContent < rowB.cells[2].textContent) {
-//       return -1;
-//     }
-//   });
-//   list.append(...sortedRows);
-// });

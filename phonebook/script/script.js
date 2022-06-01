@@ -59,11 +59,7 @@
     const btnWrapper = document.createElement('div');
     btnWrapper.classList.add('btn-wrapper');
 
-    const btns = params.map(({
-      className,
-      type,
-      text,
-    }) => {
+    const btns = params.map(({className, type, text}) => {
       const button = document.createElement('button');
       button.type = type;
       button.textContent = text;
@@ -189,11 +185,7 @@
     };
   };
 
-  const createRow = ({
-    name: firstName,
-    surname,
-    phone,
-  }) => {
+  const createRow = ({name: firstName, surname, phone}) => {
     const tr = document.createElement('tr');
     tr.classList.add('contact');
 
@@ -248,7 +240,12 @@
       formOverlay.classList.remove('is-visible');
     };
 
-    btnAdd.addEventListener('click', openModal);
+    btnAdd.addEventListener('click', () => {
+      document.querySelectorAll('.delete').forEach(del => {
+        del.classList.remove('is-visible');
+      });
+      openModal();
+    });
 
     formOverlay.addEventListener('click', e => {
       const target = e.target;
@@ -296,7 +293,6 @@
 
   const deleteControl = (btnDel, list, btnAdd) => {
     btnDel.addEventListener('click', () => {
-      btnAdd.classList.toggle('pointer-event');
       document.querySelectorAll('.delete').forEach(del => {
         del.classList.toggle('is-visible');
       });
@@ -313,26 +309,6 @@
     });
   };
 
-  const sortRows = (list) => {
-    const contactName = document.querySelector('.first-name');
-    const contactSurname = document.querySelector('.second-name');
-    const contactRows = document.querySelectorAll('.contact');
-
-    contactName.addEventListener('click', () => {
-      const sortedRows = Array.from(contactRows).slice(0)
-          .sort((rowA, rowB) => (
-          rowA.cells[1].textContent > rowB.cells[1].textContent ? 1 : -1));
-      list.append(...sortedRows);
-    });
-
-    contactSurname.addEventListener('click', () => {
-      const sortedRows = Array.from(contactRows).slice(0)
-          .sort((rowA, rowB) => (
-          rowA.cells[2].textContent > rowB.cells[2].textContent ? 1 : -1));
-      list.append(...sortedRows);
-    });
-  };
-
   const addContactPage = (contact, list) => {
     list.append(createRow(contact));
   };
@@ -341,6 +317,33 @@
     const allRow = data.map(createRow);
     elem.append(...allRow);
     return allRow;
+  };
+
+  const sortRows = (list) => {
+    const contactName = document.querySelector('.first-name');
+    const contactSurname = document.querySelector('.second-name');
+    const contactRows = document.querySelectorAll('.contact');
+    const data = getStorage('contacts');
+
+    contactName.addEventListener('click', () => {
+      const sortByName = data.sort((nameA, nameB) => (
+        nameA.name > nameB.name ? 1 : -1));
+      setStorage('contacts', sortByName);
+      const sortedRows = Array.from(contactRows).slice(0)
+          .sort((rowA, rowB) => (
+      rowA.cells[1].textContent > rowB.cells[1].textContent ? 1 : -1));
+      list.append(...sortedRows);
+    });
+
+    contactSurname.addEventListener('click', () => {
+      const sortBySurname = data.sort((nameA, nameB) => (
+        nameA.surname > nameB.surname ? 1 : -1));
+      setStorage('contacts', sortBySurname);
+      const sortedRows = Array.from(contactRows).slice(0)
+          .sort((rowA, rowB) => (
+          rowA.cells[2].textContent > rowB.cells[2].textContent ? 1 : -1));
+      list.append(...sortedRows);
+    });
   };
 
   const formControl = (form, list, closeModal) => {
@@ -374,10 +377,10 @@
     const allRow = renderContacts(list, getDataFromStorage);
     const {closeModal} = modalControl(btnAdd, formOverlay);
 
+    sortRows(list);
     hoverRow(allRow, logo);
     deleteControl(btnDel, list, btnAdd);
     formControl(form, list, closeModal);
-    sortRows(list);
     removeStorage();
   };
 

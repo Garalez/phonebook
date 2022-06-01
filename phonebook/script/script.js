@@ -1,34 +1,6 @@
 'use strict';
 
-const data = [
-  {
-    name: 'Иван',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Мария',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
-];
-
 {
-  const addContactData = contact => {
-    data.push(contact);
-    console.log('data: ', data);
-  };
-
   const createContainer = () => {
     const container = document.createElement('div');
     container.classList.add('container');
@@ -87,7 +59,11 @@ const data = [
     const btnWrapper = document.createElement('div');
     btnWrapper.classList.add('btn-wrapper');
 
-    const btns = params.map(({className, type, text}) => {
+    const btns = params.map(({
+      className,
+      type,
+      text,
+    }) => {
       const button = document.createElement('button');
       button.type = type;
       button.textContent = text;
@@ -190,7 +166,10 @@ const data = [
       },
     ]);
     const table = createTable();
-    const {form, overlay} = createForm();
+    const {
+      form,
+      overlay,
+    } = createForm();
     const footer = createFooter();
     const footerLogo = footerText(title);
 
@@ -210,7 +189,11 @@ const data = [
     };
   };
 
-  const createRow = ({name: firstName, surname, phone}) => {
+  const createRow = ({
+    name: firstName,
+    surname,
+    phone,
+  }) => {
     const tr = document.createElement('tr');
     tr.classList.add('contact');
 
@@ -244,12 +227,6 @@ const data = [
     return tr;
   };
 
-  const renderContacts = (elem, data) => {
-    const allRow = data.map(createRow);
-    elem.append(...allRow);
-    return allRow;
-  };
-
   const hoverRow = (allRow, logo) => {
     const text = logo.textContent;
     allRow.forEach(contact => {
@@ -276,7 +253,7 @@ const data = [
     formOverlay.addEventListener('click', e => {
       const target = e.target;
       if (target === formOverlay ||
-          target.classList.contains('close')) {
+        target.classList.contains('close')) {
         closeModal();
       }
     });
@@ -286,8 +263,40 @@ const data = [
     };
   };
 
-  const deleteControl = (btnDel, list) => {
+  const getStorage = key => {
+    const objFromStorage = JSON.parse(localStorage.getItem(key));
+    if (objFromStorage === null) {
+      return [];
+    } else {
+      return objFromStorage;
+    }
+  };
+
+  const setStorage = (key, obj) => {
+    const getData = getStorage('contacts');
+    if (Array.isArray(obj)) {
+      getData.splice(0, getData.length, ...obj);
+    } else {
+      getData.push(obj);
+    }
+    const newData = JSON.stringify(getData);
+    localStorage.setItem(key, newData);
+  };
+
+
+  const removeStorage = phoneNumber => {
+    const getDataFromStorage = getStorage('contacts');
+    getDataFromStorage.forEach((item, index) => {
+      if (phoneNumber === item.phone) {
+        getDataFromStorage.splice([index], 1);
+        setStorage('contacts', getDataFromStorage);
+      }
+    });
+  };
+
+  const deleteControl = (btnDel, list, btnAdd) => {
     btnDel.addEventListener('click', () => {
+      btnAdd.classList.toggle('pointer-event');
       document.querySelectorAll('.delete').forEach(del => {
         del.classList.toggle('is-visible');
       });
@@ -295,7 +304,10 @@ const data = [
 
     list.addEventListener('click', e => {
       const target = e.target;
+      const phoneNumber = target.
+          parentNode.parentNode.childNodes[3].textContent;
       if (target.closest('.del-icon')) {
+        removeStorage(phoneNumber);
         target.closest('.contact').remove();
       }
     });
@@ -325,6 +337,12 @@ const data = [
     list.append(createRow(contact));
   };
 
+  const renderContacts = (elem, data) => {
+    const allRow = data.map(createRow);
+    elem.append(...allRow);
+    return allRow;
+  };
+
   const formControl = (form, list, closeModal) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -332,7 +350,7 @@ const data = [
       const newContact = Object.fromEntries(formData);
 
       addContactPage(newContact, list);
-      addContactData(newContact);
+      setStorage('contacts', newContact);
       form.reset();
       closeModal();
     });
@@ -352,13 +370,15 @@ const data = [
 
     // Функционал
 
-    const allRow = renderContacts(list, data);
+    const getDataFromStorage = getStorage('contacts');
+    const allRow = renderContacts(list, getDataFromStorage);
     const {closeModal} = modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, logo);
-    deleteControl(btnDel, list);
+    deleteControl(btnDel, list, btnAdd);
     formControl(form, list, closeModal);
     sortRows(list);
+    removeStorage();
   };
 
   window.phoneBookInit = init;

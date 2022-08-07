@@ -1,5 +1,4 @@
-import createElements from './createElements.js';
-
+import createElements from './createElements';
 const {
   createHeader,
   createLogo,

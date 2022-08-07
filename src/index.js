@@ -1,4 +1,6 @@
-import control from './modules/control.js';
+import {renderPhoneBook, renderContacts} from './script/render';
+import {getStorage, removeStorage} from './script/serviceStorage';
+import control from './script/control';
 const {
   hoverRow,
   modalControl,
@@ -7,9 +9,8 @@ const {
   sortRows,
 } = control;
 
-import {renderPhoneBook, renderContacts} from './modules/render.js';
+import './scss/index.scss';
 
-import {getStorage, removeStorage} from './modules/serviceStorage.js';
 
 {
   const init = (selectorApp, title) => {

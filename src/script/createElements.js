@@ -1,3 +1,5 @@
+import editImg from '../img/edit.svg';
+
 const createContainer = () => {
   const container = document.createElement('div');
   container.classList.add('container');
@@ -164,11 +166,12 @@ const createRow = ({name: firstName, surname, phone}) => {
   tdPhone.append(phoneLink);
   const edit = document.createElement('td');
   const editBtn = document.createElement('button');
-  editBtn.style.background = 'url("./phonebook/img/edit.svg")';
+  editBtn.style.background = `url(${editImg})`;
   editBtn.style.backgroundRepeat = 'no-repeat';
   editBtn.style.height = '22px';
   editBtn.style.width = '22px';
   editBtn.style.border = 'none';
+
   edit.append(editBtn);
 
   tr.append(tdDel, tdName, tdSurname, tdPhone, edit);

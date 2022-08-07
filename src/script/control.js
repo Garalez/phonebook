@@ -1,6 +1,6 @@
-import createElements from './createElements.js';
+import createElements from './createElements';
 const {createRow} = createElements;
-import * as data from './serviceStorage.js';
+import * as data from './serviceStorage';
 
 const hoverRow = (allRow, logo) => {
   const text = logo.textContent;
@@ -88,6 +88,7 @@ const sortRows = (list) => {
     const sortByName = getDataFromStorage.sort((nameA, nameB) => (
       nameA.name > nameB.name ? 1 : -1));
     data.setStorage('contacts', sortByName);
+
     const sortedRows = Array.from(contactRows).slice(0)
         .sort((rowA, rowB) => (
     rowA.cells[1].textContent > rowB.cells[1].textContent ? 1 : -1));
@@ -98,6 +99,7 @@ const sortRows = (list) => {
     const sortBySurname = getDataFromStorage.sort((nameA, nameB) => (
       nameA.surname > nameB.surname ? 1 : -1));
     data.setStorage('contacts', sortBySurname);
+
     const sortedRows = Array.from(contactRows).slice(0)
         .sort((rowA, rowB) => (
         rowA.cells[2].textContent > rowB.cells[2].textContent ? 1 : -1));
